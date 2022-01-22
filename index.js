@@ -2,6 +2,7 @@ const randomUUID = require('crypto').randomUUID;
 const fs         = require('fs');
 
 const mimeDb = require('mime-db');
+const fetch  = require('cross-fetch');
 
 const puppeteer       = require('puppeteer-extra');
 const AdblockerPlugin = require('puppeteer-extra-plugin-adblocker');
@@ -15,6 +16,7 @@ puppeteer.use(StealthPlugin());
 // =============================================================================
 
 const OUTPUT_DIRECTORY = './responses';
+const CHROME_LAUNCHER_FLAGS_URL = 'https://raw.githubusercontent.com/GoogleChrome/chrome-launcher/master/src/flags.ts';
 
 // =============================================================================
 
@@ -67,6 +69,24 @@ function getFilenameFromResponse (response) {
   return filename;
 }
 
+async function getChromeLauncherDefaultFlags () {
+  const response = await fetch(CHROME_LAUNCHER_FLAGS_URL);
+  const body = await response.text();
+  const flags = body
+    .split('\n')
+    .filter((line) => line.startsWith(`  '--`)) // filter for flags
+    .map((line) => {
+      return line
+        .replace(/,$/, '') // remove trailing comma
+        .replace(/'$/, '') // remove trailing single quote
+        .replace(`  '`, '') // remove leading whitespace and leading single quote
+      ;
+    })
+  ;
+
+  return flags;
+}
+
 async function main () {
   mkdirp(OUTPUT_DIRECTORY);
 
@@ -75,6 +95,7 @@ async function main () {
     defaultViewport : null,
     devtools        : true,
     args            : [
+      ...(await getChromeLauncherDefaultFlags()),
       '--window-size=1920,1170',
       '--window-position=0,0',
       '--enable-logging',
@@ -85,15 +106,15 @@ async function main () {
   const page = (await browser.pages())[0];
 
   page.on('response', async (response) => {
+    const url      = response.url();
     const status   = response.status();
     const buffer   = await response.buffer();
-
     const filename = getFilenameFromResponse(response);
 
     // if not a redirect or error
     if (status < 300) {
+      console.log('DUMPING', url);
       writeFile(filename, buffer);
-      console.log(response);
     }
   });
 }
