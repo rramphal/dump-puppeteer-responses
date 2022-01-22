@@ -1,4 +1,4 @@
-# Dump Chrome Responses
+# Dump Puppeteer Responses
 
 ## Running
 

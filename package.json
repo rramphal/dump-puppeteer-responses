@@ -1,5 +1,5 @@
 {
-  "name": "dump-chrome-responses",
+  "name": "dump-puppeteer-responses",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
