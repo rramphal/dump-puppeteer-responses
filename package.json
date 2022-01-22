@@ -1,0 +1,18 @@
+{
+  "name": "dump-chrome-responses",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Ravi S. Rāmphal <rramphal@gmail.com> (https://rramphal.com/)",
+  "license": "ISC",
+  "dependencies": {
+    "mime-db": "^1.51.0",
+    "puppeteer-extra": "^3.2.3",
+    "puppeteer-extra-plugin-adblocker": "^2.12.0",
+    "puppeteer-extra-plugin-stealth": "^2.9.0"
+  }
+}
