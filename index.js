@@ -1,7 +1,7 @@
 const randomUUID = require('crypto').randomUUID;
 const fs         = require('fs');
 
-var mimeDb = require('mime-db');
+const mimeDb = require('mime-db');
 
 const puppeteer       = require('puppeteer-extra');
 const AdblockerPlugin = require('puppeteer-extra-plugin-adblocker');
@@ -16,15 +16,10 @@ puppeteer.use(StealthPlugin());
 
 const OUTPUT_DIRECTORY = './responses';
 
-const URL_PATTERNS = [
-  {
-    urlPattern: '*',
-    requestStage: 'Response',
-  },
-];
-
 // =============================================================================
 
+// this is naïve - assumes no duplicate names
+// and dumps everything into one folder
 function writeFile (filename, buffer) {
   fs.writeFile(`${OUTPUT_DIRECTORY}/${filename}`, buffer, 'binary', (error) => {
     if (error) {
@@ -38,23 +33,38 @@ function mkdirp (directoryPath) {
   fs.mkdirSync(directoryPath, { recursive: true });
 }
 
-function getExtensionFromResponse (response, shouldPrefixDot = true) {
+function getFilenameFromResponse (response) {
+  let filename = randomUUID(); // default to a random name
+
+  const url     = response.url();
   const headers = response._headers;
 
-  if (headers) {
-    const contentType = headers['content-type'];
-    const mimeData    = mimeDb[contentType];
+  if (url) {
+    const sanitizedUrl = url.replace(/\/+$/, '') // remove trailing slashes
+    const urlTokens = new URL(sanitizedUrl);
+    const { pathname } = urlTokens;
+    const segments = pathname.split('/');
+    filename = segments[segments.length - 1]; // use last segment if we can
+  }
 
-    if (mimeData) {
-      const extensions = mimeData.extensions;
+  // if last segment did not include a dot (lazy test for an extension)
+  // then pull it from `content-type`
+  if (!filename.includes('.')) {
+    if (headers) {
+      const contentType = headers['content-type'];
+      const mimeData    = mimeDb[contentType];
 
-      if (extensions && extensions.length) {
-        return `${shouldPrefixDot ? '.' : ''}${extensions[0]}`;
+      if (mimeData) {
+        const extensions = mimeData.extensions;
+
+        if (extensions && extensions.length) {
+          filename += extensions[0];
+        }
       }
     }
   }
 
-  return '';
+  return filename;
 }
 
 async function main () {
@@ -78,9 +88,7 @@ async function main () {
     const status   = response.status();
     const buffer   = await response.buffer();
 
-    const filenameBase      = randomUUID();
-    const filenameExtension = getExtensionFromResponse(response, true);
-    const filename          = `${filenameBase}${filenameExtension}`;
+    const filename = getFilenameFromResponse(response);
 
     // if not a redirect or error
     if (status < 300) {
