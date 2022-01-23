@@ -2,6 +2,7 @@ const randomUUID = require('crypto').randomUUID;
 const fs         = require('fs');
 
 const sqlite3 = require('better-sqlite3')
+const dayjs   = require('dayjs');
 const mimeDb  = require('mime-db');
 const fetch   = require('cross-fetch');
 
@@ -134,14 +135,14 @@ async function runBrowser (insertStatement) {
         console.log('[URL]', url);
 
         const buffer = await response.buffer();
-        const uuid   = randomUUID();
+        const id   = `${dayjs().format('YYYYMMDDHHssSSS')}_${randomUUID()}`;
 
         const { contentType, extension, headers } = getDataFromResponse(response);
 
-        const filename = `${uuid}.${extension}`;
+        const filename = `${id}.${extension}`;
         writeFile(filename, buffer);
 
-        insertStatement.run(uuid, url, extension, contentType, headers);
+        insertStatement.run(id, url, extension, contentType, headers);
       }
     } catch (error) {
       console.error('\n============================\n');
@@ -156,7 +157,7 @@ function setupDatabase () {
 
   const createStatement = db.prepare(`
     CREATE TABLE IF NOT EXISTS files (
-      uuid         STRING   PRIMARY KEY
+      id           STRING   PRIMARY KEY
                             NOT NULL
                             UNIQUE,
       url          STRING   NOT NULL,
@@ -173,7 +174,7 @@ function setupDatabase () {
   const insertStatement = db.prepare(`
     INSERT
     INTO
-      files (uuid, url, extension, content_type, headers)
+      files (id, url, extension, content_type, headers)
     VALUES
       (?, ?, ?, ?, ?);
   `);
