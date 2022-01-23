@@ -96,7 +96,7 @@ async function main () {
     devtools        : true,
     args            : [
       ...(await getChromeLauncherDefaultFlags()),
-      '--window-size=1920,1170',
+      '--window-size=1920,1080',
       '--window-position=0,0',
       '--enable-logging',
       '--auto-open-devtools-for-tabs',
