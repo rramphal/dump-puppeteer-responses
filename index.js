@@ -82,10 +82,8 @@ function getDataFromResponse (response) {
   const headers = JSON.stringify(rawHeaders, null, 2);
 
   return {
-    contentType,
-    headers,
-
     extension: extension ? extension : 'txt', // default to plain text
+    headers,
   };
 }
 
@@ -137,12 +135,12 @@ async function runBrowser (insertStatement) {
         const buffer = await response.buffer();
         const id   = `${dayjs().format('YYYYMMDDHHssSSS')}_${randomUUID()}`;
 
-        const { contentType, extension, headers } = getDataFromResponse(response);
+        const { extension, headers } = getDataFromResponse(response);
 
         const filename = `${id}.${extension}`;
         writeFile(filename, buffer);
 
-        insertStatement.run(id, url, extension, contentType, headers);
+        insertStatement.run(id, extension, url, headers);
       }
     } catch (error) {
       console.error('\n============================\n');
@@ -160,9 +158,8 @@ function setupDatabase () {
       id           STRING   PRIMARY KEY
                             NOT NULL
                             UNIQUE,
-      url          STRING   NOT NULL,
       extension    STRING   NOT NULL,
-      content_type STRING,
+      url          STRING   NOT NULL,
       headers      STRING,
       created_at   DATETIME NOT NULL
                             DEFAULT (STRFTIME('%Y-%m-%d %H:%M:%f', 'NOW') )
@@ -174,9 +171,9 @@ function setupDatabase () {
   const insertStatement = db.prepare(`
     INSERT
     INTO
-      files (id, url, extension, content_type, headers)
+      files (id, extension, url, headers)
     VALUES
-      (?, ?, ?, ?, ?);
+      (?, ?, ?, ?);
   `);
 
   return { db, insertStatement };
