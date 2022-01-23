@@ -103,8 +103,8 @@ async function getChromeLauncherDefaultFlags () {
     .filter((line) => line.startsWith(`  '--`)) // filter for flags
     .map((line) => {
       return line
-        .replace(/,$/, '') // remove trailing comma
-        .replace(/'$/, '') // remove trailing single quote
+        .replace(/,$/, '')  // remove trailing comma
+        .replace(/'$/, '')  // remove trailing single quote
         .replace(`  '`, '') // remove leading whitespace and leading single quote
       ;
     })
@@ -144,7 +144,7 @@ async function runBrowser (insertStatement) {
         console.log('[URL]', url);
 
         const buffer = await response.buffer();
-        const id   = `${dayjs().format('YYYYMMDD_HH.ss.SSS')}_${randomUUID()}`;
+        const id     = `${dayjs().format('YYYYMMDD_HH.ss.SSS')}_${randomUUID()}`;
 
         const { extension, headers } = getDataFromResponse(response);
 
