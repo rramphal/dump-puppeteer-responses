@@ -69,7 +69,7 @@ function getDataFromResponse (response) {
     }
   }
 
-  const headers = JSON.stringify(rawHeaders);
+  const headers = JSON.stringify(rawHeaders, null, 2);
 
   return {
     contentType,
