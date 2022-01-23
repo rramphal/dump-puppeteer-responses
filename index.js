@@ -133,7 +133,7 @@ async function runBrowser (insertStatement) {
         console.log('[URL]', url);
 
         const buffer = await response.buffer();
-        const id   = `${dayjs().format('YYYYMMDDHHssSSS')}_${randomUUID()}`;
+        const id   = `${dayjs().format('YYYYMMDD_HH.ss.SSS')}_${randomUUID()}`;
 
         const { extension, headers } = getDataFromResponse(response);
 
