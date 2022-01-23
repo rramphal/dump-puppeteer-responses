@@ -12,6 +12,14 @@ const StealthPlugin   = require('puppeteer-extra-plugin-stealth');
 
 // =============================================================================
 
+const INCLUDE_PATTERNS = {
+  EVERYTHING : /.*/,
+  PNG        : /\.png/,
+  XHTML      : /\.xhtml/,
+  IMAGE      : /\.(jpg|jpeg|gif|png|svg|bmp|tif|tiff|webp)/,
+}
+const INCLUDE_PATTERN = INCLUDE_PATTERNS.EVERYTHING;
+
 const OUTPUT_DIRECTORY = './output/responses';
 
 const DATABASE_PATH = './output/responses.sqlite3';
@@ -130,6 +138,9 @@ async function runBrowser (insertStatement) {
       // if not a redirect or error
       if (status < 300) {
         const url = response.url();
+
+        if (!INCLUDE_PATTERN.test(url)) return;
+
         console.log('[URL]', url);
 
         const buffer = await response.buffer();
