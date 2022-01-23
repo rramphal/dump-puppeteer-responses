@@ -106,13 +106,14 @@ async function main () {
   const page = (await browser.pages())[0];
 
   page.on('response', async (response) => {
-    const url      = response.url();
-    const status   = response.status();
-    const buffer   = await response.buffer();
-    const filename = getFilenameFromResponse(response);
+    const status = response.status();
 
     // if not a redirect or error
     if (status < 300) {
+      const url      = response.url();
+      const buffer   = await response.buffer();
+      const filename = getFilenameFromResponse(response);
+
       console.log('DUMPING', url);
       writeFile(filename, buffer);
     }
