@@ -10,6 +10,7 @@
   "author": "Ravi S. Rāmphal <rramphal@gmail.com> (https://rramphal.com/)",
   "license": "ISC",
   "dependencies": {
+    "better-sqlite3": "^7.5.0",
     "cross-fetch": "^3.1.5",
     "mime-db": "^1.51.0",
     "puppeteer-extra": "^3.2.3",
