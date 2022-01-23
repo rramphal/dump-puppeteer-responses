@@ -38,8 +38,20 @@ function mkdirp (directoryPath) {
   fs.mkdirSync(directoryPath, { recursive: true });
 }
 
+function getExtensionFromContentType (contentType) {
+  const mimeData = mimeDb[contentType];
+
+  if (mimeData) {
+    const extensions = mimeData.extensions;
+
+    if (extensions && extensions.length) {
+      return extensions[0];
+    }
+  }
+}
+
 function getDataFromResponse (response) {
-  let extension = 'txt'; // default to plain text
+  let extension;
 
   const rawUrl      = response.url();
   const rawHeaders  = response._headers;
@@ -51,30 +63,28 @@ function getDataFromResponse (response) {
   const segments     = pathname.split('/');
   const lastSegment  = segments[segments.length - 1];
 
-  // if last segment did not include a dot (lazy test for an extension)
-  // then pull it from `content-type`
+  // if last segment did not include a dot (lazy test
+  // for an extension) or if the extracted extension is
+  // too long then pull it from `content-type`
   if (lastSegment.includes('.')) {
     const filenameTokens = lastSegment.split('.');
 
     extension = filenameTokens[filenameTokens.length - 1];
-  } else {
-    const mimeData = mimeDb[contentType];
 
-    if (mimeData) {
-      const extensions = mimeData.extensions;
-
-      if (extensions && extensions.length) {
-        extension = extensions[0];
-      }
+    if (extension.length > 10) {
+      extension = getExtensionFromContentType(contentType);
     }
+  } else {
+    extension = getExtensionFromContentType(contentType);
   }
 
   const headers = JSON.stringify(rawHeaders, null, 2);
 
   return {
     contentType,
-    extension,
     headers,
+
+    extension: extension ? extension : 'txt', // default to plain text
   };
 }
 
