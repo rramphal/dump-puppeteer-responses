@@ -141,7 +141,7 @@ async function runBrowser (insertStatement) {
       new URL(url); // throws if URL is invalid
       page.goto(url);
     } catch (error) {
-      console.error('Invalid URL passed in:', url);
+      console.error('Invalid URL passed in:', url, '(ignoring)');
     }
   }
 
