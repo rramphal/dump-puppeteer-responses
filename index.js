@@ -1,5 +1,6 @@
 const randomUUID = require('crypto').randomUUID;
 const fs         = require('fs');
+const URL        = require('url').URL;
 
 const sqlite3 = require('better-sqlite3')
 const dayjs   = require('dayjs');
@@ -131,6 +132,18 @@ async function runBrowser (insertStatement) {
   });
 
   const page = (await browser.pages())[0];
+
+  // navigate directly to URL if a valid one is provided
+  if (process.argv.length === 3) {
+    const url = process.argv[2];
+
+    try {
+      new URL(url); // throws if URL is invalid
+      page.goto(url);
+    } catch (error) {
+      console.error('Invalid URL passed in:', url);
+    }
+  }
 
   page.on('response', async (response) => {
     try {
