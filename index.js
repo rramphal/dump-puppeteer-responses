@@ -126,6 +126,7 @@ async function runBrowser (insertStatement) {
       '--window-position=0,0',
       '--enable-logging',
       '--auto-open-devtools-for-tabs',
+      '--incognito',
     ],
   });
 
