@@ -1,3 +1,6 @@
+// Copyright: (c) 2022, Ravi S. Rāmphal <rramphal@gmail.com>
+// GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+
 const randomUUID = require('crypto').randomUUID;
 const fs         = require('fs');
 const URL        = require('url').URL;
