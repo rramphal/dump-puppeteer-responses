@@ -20,5 +20,9 @@ database.
 ```shell
 pnpm install
 
+# to open to a blank browser where you can browse
 node index.js
+
+# to open directly to a specific URL
+node index.js [URL]
 ```
