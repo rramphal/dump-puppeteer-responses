@@ -67,7 +67,7 @@ function getDataFromResponse (response) {
   let extension;
 
   const rawUrl      = response.url();
-  const rawHeaders  = response._headers;
+  const rawHeaders  = response.headers();
   const contentType = rawHeaders['content-type'];
 
   const sanitizedUrl = rawUrl.replace(/\/+$/, ''); // remove trailing slashes
