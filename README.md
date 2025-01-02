@@ -18,7 +18,7 @@ database.
 
 <!-- Please remember to update `.cdmessage` if this gets updated -->
 ```shell
-npm install
+pnpm install
 
 node index.js
 ```
